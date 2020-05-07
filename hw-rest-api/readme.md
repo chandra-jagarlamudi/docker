@@ -13,4 +13,3 @@ http://localhost:8080/whoami
 http://localhost:8080/hello-world-bean
 http://localhost:8080/hello-world/Ragas
 ```
-- 

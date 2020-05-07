@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    dbinstance: mysql-data-volume
+  name: mysql-data-volume
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    dbinstance: mysql
+  name: mysql
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      dbinstance: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        dbinstance: mysql
+    spec:
+      containers:
+      - env:
+        - name: MYSQL_DATABASE
+          #value: todos
+          valueFrom:
+            configMapKeyRef:
+              key: MYSQL_DATABASE
+              name: todo-web-app-config
+        - name: MYSQL_ROOT_PASSWORD
+          #value: rootpassword
+          valueFrom:
+            secretKeyRef:
+              key: MYSQL_ROOT_PASSWORD
+              name: todo-web-app-secrets
+        - name: MYSQL_USER
+          #value: todosuser
+          valueFrom:
+            configMapKeyRef:
+              key: MYSQL_USER
+              name: todo-web-app-config
+        - name: MYSQL_PASSWORD
+          #value: todospassword
+          valueFrom:
+              secretKeyRef:
+                key: MYSQL_PASSWORD
+                name: todo-web-app-secrets
+        image: mysql:5.7
+        args:
+            - "--ignore-db-dir=lost+found" #CHANGE
+        imagePullPolicy: IfNotPresent
+        name: mysql
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mysql-data-volume
+      restartPolicy: Always
+      volumes:
+      - name: mysql-data-volume
+        persistentVolumeClaim:
+          claimName: mysql-data-volume
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    dbinstance: mysql
+  name: mysql
+spec:
+  #type: LoadBalancer with load balance the DB is exposed beyond the cluster, making it ClusterIP the DB will be accessible with in the cluster
+  type: ClusterIP
+  ports:
+  - name: "3306"
+    port: 3306
+    targetPort: 3306
+  selector:
+    dbinstance: mysql

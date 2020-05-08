@@ -22,14 +22,14 @@ spec:
         app: currency-conversion
     spec:
       containers:
-      - image: cjragas/currency-conversion:1.0.0-RELEASE
+      - image: cjragas/currency-conversion:2.0.0-RELEASE
         imagePullPolicy: IfNotPresent
         name: currency-conversion
         env:
-          - name: CURRENCY_EXCHANGE_URI
-            value: http://currency-exchange
-#         - name: SPRING_PROFILES_ACTIVE
-#           value: kubernetes
+        - name: CURRENCY_EXCHANGE_URI
+          value: http://currency-exchange
+        - name: SPRING_CLOUD_GCP_TRACE_ENABLED
+          value: "true"
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
 ---
@@ -48,4 +48,4 @@ spec:
   selector:
     app: currency-conversion
   sessionAffinity: None
-  type: NodePort
+  type: LoadBalancer

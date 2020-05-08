@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableFeignClients("com.ragas.microservices.currencyconversionservice.resource")
-//@EnableDiscoveryClient//Change
+//@EnableDiscoveryClient //This can be used when you are using Spring Cloud
 public class CurrencyConversionServiceApplication {
 
 	public static void main(String[] args) {

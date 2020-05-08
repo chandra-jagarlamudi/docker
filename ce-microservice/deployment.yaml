@@ -22,19 +22,15 @@ spec:
         app: currency-exchange
     spec:
       containers:
-      - image: cjragas/currency-exchange:1.0.0-RELEASE
+      - image: cjragas/currency-exchange:2.0.0-RELEASE
         imagePullPolicy: IfNotPresent
         name: currency-exchange
+        env:
+        - name: SPRING_CLOUD_GCP_TRACE_ENABLED
+          value: "true"
         ports:
         - name: liveness-port
           containerPort: 8000
-        resources: #CHANGE
-          requests:
-            cpu: 100m
-            memory: 512Mi
-          limits:
-            cpu: 500m
-            memory: 1024Mi #256Mi 
         readinessProbe:
           httpGet:
             path: /
@@ -67,4 +63,4 @@ spec:
   selector:
     app: currency-exchange
   sessionAffinity: None
-  type: NodePort
+  type: LoadBalancer

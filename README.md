@@ -1,1 +1,1 @@
-# docker
+# Learning and exploring the features of Kubernetes
